@@ -23,6 +23,7 @@ const predictedRevenueEl = document.getElementById('predicted-revenue');
 const predictBtn = document.getElementById('predict-btn');
 const downloadReportBtn = document.getElementById('downloadReport');
 const backBtn = document.getElementById('back-btn');
+const tryPredictorBtn = document.getElementById('try-predictor-btn');
 const loadingEl = document.getElementById('loading');
 const loadingTextEl = document.getElementById('loading-text');
 const errorMessageEl = document.getElementById('error-message');
