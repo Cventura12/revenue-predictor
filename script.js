@@ -263,10 +263,12 @@ async function calculateWhatIfScenarios() {
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
     
+    // Reset UI so repeated predictions don't get stuck on old results
+    resetPredictionState();
+    
     // Disable button and show loading
     predictBtn.disabled = true;
     showLoading();
-    hideError();
     
     // Collect form data
     const formData = {
@@ -303,7 +305,11 @@ form.addEventListener('submit', async (e) => {
         console.error('Prediction error:', error);
         hideLoading();
         showError(error.message || 'Failed to connect to the API. Make sure the server is running.');
-        predictBtn.disabled = false;
+    } finally {
+        // Always re-enable so user can run another prediction
+        if (predictBtn) {
+            predictBtn.disabled = false;
+        }
     }
 });
 
@@ -468,6 +474,25 @@ if (runScenariosBtn) {
 
 // Display growth scenarios as comparison cards - removed (not in current HTML structure)
 // This functionality is now handled by the What-If scenarios cards in the dashboard
+
+// Reset prediction UI so the user can run multiple predictions cleanly
+function resetPredictionState() {
+    hideError();
+    
+    if (predictedRevenueEl) {
+        predictedRevenueEl.textContent = '0';
+    }
+    
+    if (revenueChart) {
+        revenueChart.destroy();
+        revenueChart = null;
+    }
+    
+    if (contributionsChart) {
+        contributionsChart.destroy();
+        contributionsChart = null;
+    }
+}
 
 // Display prediction results with animations
 function displayResults(data) {
@@ -1244,6 +1269,17 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize slider value displays
     initializeSliders();
+    
+    // Re-enable predictions when sliders change
+    const sliderInputs = document.querySelectorAll('input[type="range"]');
+    sliderInputs.forEach((slider) => {
+        slider.addEventListener('input', () => {
+            resetPredictionState();
+            if (predictBtn) {
+                predictBtn.disabled = false;
+            }
+        });
+    });
     
     // Set initial GSAP states for animations
     if (resultsSection) {
