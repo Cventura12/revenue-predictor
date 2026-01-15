@@ -11,7 +11,7 @@ const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // API endpoint configuration
 // Using Render deployment URL for production
-const API_BASE_URL = 'https://revenue-predictor-1.onrender.com';
+const API_BASE_URL = 'https://revenue-predictor-5lqt.onrender.com';
 const PREDICT_ENDPOINT = `${API_BASE_URL}/predict`;
 const REPORT_ENDPOINT = `${API_BASE_URL}/report`;
 const HISTORY_ENDPOINT = `${API_BASE_URL}/history`;
@@ -22,6 +22,7 @@ const resultsSection = document.getElementById('results-section');
 const predictedRevenueEl = document.getElementById('predicted-revenue');
 const predictBtn = document.getElementById('predict-btn');
 const downloadReportBtn = document.getElementById('downloadReport');
+const backBtn = document.getElementById('back-btn');
 const loadingEl = document.getElementById('loading');
 const loadingTextEl = document.getElementById('loading-text');
 const errorMessageEl = document.getElementById('error-message');

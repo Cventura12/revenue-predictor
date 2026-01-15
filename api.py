@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException, Header, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 import numpy as np
@@ -95,6 +96,14 @@ app = FastAPI(
     description="API for training and using a linear regression model to predict business revenue",
     version="1.0.0"
     
+)
+
+# Allow all origins/methods/headers for CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
