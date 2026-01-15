@@ -30,8 +30,8 @@ from database import save_prediction_to_db, get_prediction_history, get_all_pred
 load_dotenv()
 
 # Initialize Supabase client
-SUPABASE_URL = os.getenv("SUPABASE_URL", "https://hvboifzfawryabsgsaau.supabase.co")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2Ym9pZnpmYXdyeWFic2dzYWF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ5NzY4MDAsImV4cCI6MjA1MDU1MjgwMH0.6xs-5PAP2gSyfaAe53X5hQ_LThaxAxs")
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
 if SUPABASE_URL and SUPABASE_KEY:
     supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
