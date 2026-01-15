@@ -1126,23 +1126,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Authentication: Check initial auth state
-    checkAuth().then(session => {
-        if (session && session.user) {
-            updateUIForAuth(session.user);
-        } else {
-            updateUIForAuth(null);
-        }
-    });
+    // TEMPORARY: Auth bypassed for testing - REMOVE BEFORE PRODUCTION
+    console.log('⚠️ WARNING: Authentication is bypassed for testing');
+    updateUIForAuth({ email: 'test@example.com' });
     
-    // Authentication: Listen for auth state changes
-    sbClient.auth.onAuthStateChange((event, session) => {
-        if (event === 'SIGNED_IN' && session) {
-            updateUIForAuth(session.user);
-        } else if (event === 'SIGNED_OUT') {
-            updateUIForAuth(null);
-        }
-    });
+    // TEMPORARY: Commented out for testing
+    // sbClient.auth.onAuthStateChange((event, session) => {
+    //     if (event === 'SIGNED_IN' && session) {
+    //         updateUIForAuth(session.user);
+    //     } else if (event === 'SIGNED_OUT') {
+    //         updateUIForAuth(null);
+    //     }
+    // });
     
     // Login form handler
     if (loginForm) {
