@@ -66,7 +66,11 @@ async function handleLogin(email, password) {
         return data;
     } catch (error) {
         console.error('Login error:', error);
-        throw error;
+        if (loginError) {
+            loginError.textContent = error.message || 'Login failed. Please check your credentials.';
+            loginError.classList.remove('hidden');
+        }
+        return null;
     }
 }
 
@@ -81,7 +85,11 @@ async function handleSignup(email, password) {
         return data;
     } catch (error) {
         console.error('Signup error:', error);
-        throw error;
+        if (signupError) {
+            signupError.textContent = error.message || 'Sign up failed. Please try again.';
+            signupError.classList.remove('hidden');
+        }
+        return null;
     }
 }
 
@@ -1151,18 +1159,23 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // TEMPORARY: Auth bypassed for testing - REMOVE BEFORE PRODUCTION
-    console.log('⚠️ WARNING: Authentication is bypassed for testing');
-    updateUIForAuth({ email: 'test@example.com' });
+    // Authentication: Check initial auth state
+    checkAuth().then(session => {
+        if (session && session.user) {
+            updateUIForAuth(session.user);
+        } else {
+            updateUIForAuth(null);
+        }
+    });
     
-    // TEMPORARY: Commented out for testing
-    // sbClient.auth.onAuthStateChange((event, session) => {
-    //     if (event === 'SIGNED_IN' && session) {
-    //         updateUIForAuth(session.user);
-    //     } else if (event === 'SIGNED_OUT') {
-    //         updateUIForAuth(null);
-    //     }
-    // });
+    // Authentication: Listen for auth state changes
+    sbClient.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_IN' && session) {
+            updateUIForAuth(session.user);
+        } else if (event === 'SIGNED_OUT') {
+            updateUIForAuth(null);
+        }
+    });
     
     // Login form handler
     if (loginForm) {
@@ -1175,15 +1188,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 loginError.classList.add('hidden');
             }
             
-            try {
-                await handleLogin(email, password);
-                // UI will update via auth state change listener
-            } catch (error) {
-                if (loginError) {
-                    loginError.textContent = error.message || 'Login failed. Please check your credentials.';
-                    loginError.classList.remove('hidden');
-                }
-            }
+            const result = await handleLogin(email, password);
+            if (!result) return;
+            // UI will update via auth state change listener
         });
     }
     
@@ -1215,19 +1222,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             
-            try {
-                await handleSignup(email, password);
-                if (signupError) {
-                    signupError.textContent = 'Sign up successful! Please check your email to verify your account.';
-                    signupError.style.background = '#d1fae5';
-                    signupError.style.color = '#065f46';
-                    signupError.classList.remove('hidden');
-                }
-            } catch (error) {
-                if (signupError) {
-                    signupError.textContent = error.message || 'Sign up failed. Please try again.';
-                    signupError.classList.remove('hidden');
-                }
+            const result = await handleSignup(email, password);
+            if (!result) return;
+            if (signupError) {
+                signupError.textContent = 'Sign up successful! Please check your email to verify your account.';
+                signupError.style.background = '#d1fae5';
+                signupError.style.color = '#065f46';
+                signupError.classList.remove('hidden');
             }
         });
     }
