@@ -3,8 +3,8 @@
 
 // Supabase Configuration
 console.log('Script loaded successfully (sbClient build 20260114)');
-const SUPABASE_URL = 'https://hvboifzfawryabsgsaau.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2Ym9pZnpmYXdyeWFic2dzYWF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ5NzY4MDAsImV4cCI6MjA1MDU1MjgwMH0.6xs-5PAP2gSyfaAe53X5hQ_LThaxAxs'; // Replace with your anon key
+const SUPABASE_URL = 'https://hvboifzfawryabsgaau.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2Ym9pZnpmYXdyeWFic2dzYWF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgyNDY4MDksImV4cCI6MjA4MzgyMjgwOX0.42dgZvia94nPhtYmV5MxHhkk19yzw9BYDyVucq9zDT8';
 
 // Initialize Supabase client
 const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
