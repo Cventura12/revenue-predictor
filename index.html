@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RevenueAI - Dashboard</title>
+    <!-- Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- GSAP CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <!-- Authentication Modal -->
+    <div id="auth-modal" class="auth-modal hidden">
+        <div class="auth-modal-content">
+            <div class="auth-modal-header">
+                <h2>Welcome to RevenueAI</h2>
+                <button class="auth-modal-close" id="auth-modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login">Login</button>
+                <button class="auth-tab" data-tab="signup">Sign Up</button>
+            </div>
+            
+            <!-- Login Form -->
+            <div id="login-form" class="auth-form active">
+                <form id="login-form-element">
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" required placeholder="your@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" required placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">Login</button>
+                    <p id="login-error" class="auth-error hidden"></p>
+                </form>
+            </div>
+            
+            <!-- Sign Up Form -->
+            <div id="signup-form" class="auth-form hidden">
+                <form id="signup-form-element">
+                    <div class="form-group">
+                        <label for="signup-email">Email</label>
+                        <input type="email" id="signup-email" required placeholder="your@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <input type="password" id="signup-password" required placeholder="••••••••" minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password-confirm">Confirm Password</label>
+                        <input type="password" id="signup-password-confirm" required placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">Sign Up</button>
+                    <p id="signup-error" class="auth-error hidden"></p>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Navigation Sidebar -->
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <a href="#dashboard" class="nav-link active" data-page="dashboard">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#scenarios" class="nav-link" data-page="scenarios">
+                <i class="fas fa-chart-line"></i>
+                <span>Scenarios</span>
+            </a>
+            <a href="#history" class="nav-link" data-page="history">
+                <i class="fas fa-history"></i>
+                <span>History</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <button id="logout-btn" class="logout-btn hidden">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <!-- Top Navbar -->
+        <header class="top-navbar">
+            <div class="navbar-left">
+                <h1 class="project-name">RevenueAI</h1>
+            </div>
+            <div class="navbar-right">
+                <span id="user-email" class="user-email hidden"></span>
+                <div class="user-profile-circle" id="user-profile-circle">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Page -->
+        <div class="dashboard-page" id="dashboard-page">
+            <div class="dashboard-layout">
+                <!-- Left: Configuration Panel -->
+                <div class="config-panel">
+                    <div class="config-card">
+                        <h2 class="config-title">Configuration</h2>
+                        <form id="prediction-form">
+                            <div class="form-group">
+                                <label for="ad_spend">
+                                    <span class="label-text">Advertising Spend</span>
+                                    <span class="label-value" id="ad_spend_value">$25,000</span>
+                                </label>
+                                <input 
+                                    type="range" 
+                                    id="ad_spend" 
+                                    name="ad_spend" 
+                                    min="5" 
+                                    max="50" 
+                                    step="0.5" 
+                                    value="25"
+                                    class="slider"
+                                >
+                                <div class="range-labels">
+                                    <span>$5k</span>
+                                    <span>$50k</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="website_visits">
+                                    <span class="label-text">Website Visits</span>
+                                    <span class="label-value" id="website_visits_value">5,000</span>
+                                </label>
+                                <input 
+                                    type="range" 
+                                    id="website_visits" 
+                                    name="website_visits" 
+                                    min="1000" 
+                                    max="10000" 
+                                    step="100" 
+                                    value="5000"
+                                    class="slider"
+                                >
+                                <div class="range-labels">
+                                    <span>1,000</span>
+                                    <span>10,000</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="average_product_price">
+                                    <span class="label-text">Average Product Price</span>
+                                    <span class="label-value" id="average_product_price_value">$75</span>
+                                </label>
+                                <input 
+                                    type="range" 
+                                    id="average_product_price" 
+                                    name="average_product_price" 
+                                    min="20" 
+                                    max="200" 
+                                    step="1" 
+                                    value="75"
+                                    class="slider"
+                                >
+                                <div class="range-labels">
+                                    <span>$20</span>
+                                    <span>$200</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="location_score">
+                                    <span class="label-text">Location Score</span>
+                                    <span class="label-value" id="location_score_value">80</span>
+                                </label>
+                                <input 
+                                    type="range" 
+                                    id="location_score" 
+                                    name="location_score" 
+                                    min="30" 
+                                    max="95" 
+                                    step="1" 
+                                    value="80"
+                                    class="slider"
+                                >
+                                <div class="range-labels">
+                                    <span>30</span>
+                                    <span>95</span>
+                                </div>
+                            </div>
+
+                            <div class="button-group">
+                                <button type="submit" id="predict-btn" class="btn btn-primary">
+                                    <i class="fas fa-calculator"></i>
+                                    <span>Predict Revenue</span>
+                                </button>
+                                <button type="button" id="downloadReport" class="btn btn-secondary">
+                                    <i class="fas fa-download"></i>
+                                    <span>Download Report</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Right: Main Dashboard Grid -->
+                <div class="dashboard-grid">
+                    <!-- Empty State -->
+                    <div id="empty-state" class="dashboard-card empty-state-card">
+                        <div class="empty-state-content">
+                            <i class="fas fa-chart-line"></i>
+                            <h3>Ready to Predict Revenue?</h3>
+                            <p>Adjust the configuration parameters and click "Predict Revenue" to see your forecast.</p>
+                        </div>
+                    </div>
+
+                    <!-- Results Section -->
+                    <section id="results-section" class="results-section hidden">
+                        <!-- Predicted Revenue Card -->
+                        <div class="dashboard-card revenue-card">
+                            <h3 class="card-title">Predicted Revenue</h3>
+                            <div class="revenue-value">
+                                <span class="currency">$</span>
+                                <span id="predicted-revenue">0</span>
+                            </div>
+                            <p class="card-subtitle">Monthly Revenue Forecast</p>
+                        </div>
+
+                        <!-- Revenue Insight Chart Card -->
+                        <div class="dashboard-card chart-card">
+                            <h3 class="card-title">Revenue Insight</h3>
+                            <div class="chart-wrapper">
+                                <canvas id="revenueChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Feature Contributions Chart Card -->
+                        <div class="dashboard-card chart-card">
+                            <h3 class="card-title">Feature Contributions</h3>
+                            <div class="chart-wrapper">
+                                <canvas id="contributions-chart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- What-If Scenarios Card -->
+                        <div class="dashboard-card scenarios-card">
+                            <h3 class="card-title">What-If Scenarios</h3>
+                            <div class="scenarios-grid">
+                                <div class="scenario-item" id="whatif-standard">
+                                    <div class="scenario-header">
+                                        <span class="scenario-name">Standard Growth</span>
+                                        <span class="scenario-badge">Current</span>
+                                    </div>
+                                    <div class="scenario-value">
+                                        <span class="scenario-currency">$</span>
+                                        <span class="scenario-amount" id="whatif-standard-revenue">-</span>
+                                    </div>
+                                </div>
+
+                                <div class="scenario-item" id="whatif-double-ad">
+                                    <div class="scenario-header">
+                                        <span class="scenario-name">Double Ad Spend</span>
+                                        <span class="scenario-badge badge-premium">2x</span>
+                                    </div>
+                                    <div class="scenario-value">
+                                        <span class="scenario-currency">$</span>
+                                        <span class="scenario-amount" id="whatif-double-ad-revenue">-</span>
+                                    </div>
+                                </div>
+
+                                <div class="scenario-item" id="whatif-viral">
+                                    <div class="scenario-header">
+                                        <span class="scenario-name">Viral Traffic</span>
+                                        <span class="scenario-badge badge-success">2x</span>
+                                    </div>
+                                    <div class="scenario-value">
+                                        <span class="scenario-currency">$</span>
+                                        <span class="scenario-amount" id="whatif-viral-revenue">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scenarios Page -->
+        <div class="dashboard-page hidden" id="scenarios-page">
+            <div class="page-content">
+                <div class="dashboard-card">
+                    <h2 class="page-title">Scenarios Analysis</h2>
+                    <p>Advanced scenario modeling coming soon...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Page -->
+        <div class="dashboard-page hidden" id="history-page">
+            <div class="page-content">
+                <div class="dashboard-card">
+                    <h2 class="page-title">Prediction History</h2>
+                    <div class="table-wrapper">
+                        <table id="history-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Ad Spend</th>
+                                    <th>Visits</th>
+                                    <th>Predicted Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody id="history-tbody">
+                                <!-- Table rows will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div id="loading" class="loading hidden">
+        <div class="spinner"></div>
+        <p id="loading-text">Calculating prediction...</p>
+    </div>
+
+    <!-- Error Message -->
+    <div id="error-message" class="error-message hidden"></div>
+
+    <script src="script.js?v=20250115"></script>
+</body>
+</html>
