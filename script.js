@@ -279,7 +279,7 @@ form.addEventListener('submit', async (e) => {
     try {
         // Send POST request to /predict endpoint
         const headers = await getAuthHeaders();
-        const response = await fetch('https://revenue-predictor-1.onrender.com/predict', {
+        const response = await fetch('https://revenue-predictor-5lqt.onrender.com/predict', {
             method: 'POST',
             headers: headers,
             body: JSON.stringify(formData)
